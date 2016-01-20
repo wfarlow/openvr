@@ -623,11 +623,35 @@ void CMainApplication::RunMainLoop()
 	SDL_StartTextInput();
 	SDL_ShowCursor( SDL_DISABLE );
 
+	time_t  start_time = time(nullptr);
+	time_t  elapsed = time(nullptr);
+
 	while ( !bQuit )
 	{
 		bQuit = HandleInput();
 
 		RenderFrame();
+
+		elapsed = time(nullptr) - start_time;
+
+		for (int nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice) {
+			if (m_rTrackedDevicePose[nDevice].bPoseIsValid && m_rTrackedDevicePose[nDevice].bDeviceIsConnected) {
+				double yaw = 180/M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][0] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][0]);
+				double pitch = 180/M_PI*atan(-1*m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][0] / sqrt(pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1],2)+ pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2], 2)));
+				double roll = 180/M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2]);
+				double x = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][3];
+				double y = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][3];
+				double z = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][3];
+				
+				if (m_rDevClassChar[nDevice] != 'T') {
+					dprintf("%c%d,", m_rDevClassChar[nDevice], nDevice);
+					dprintf("%f,%f,%f,", x, y, z);
+					dprintf("%f,%f,%f,", yaw, pitch, roll);
+					dprintf("%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
+					dprintf("%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
+				}
+			}
+		}
 	}
 
 	SDL_StopTextInput();
@@ -1639,10 +1663,11 @@ void CMainApplication::UpdateHMDMatrixPose()
 				}
 			}
 			m_strPoseClasses += m_rDevClassChar[nDevice];
+
 		}
 	}
-
-	if ( m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid )
+		
+		if ( m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid )
 	{
 		m_mat4HMDPose = m_rmat4DevicePose[vr::k_unTrackedDeviceIndex_Hmd].invert();
 	}
