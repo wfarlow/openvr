@@ -1,2 +1,6 @@
 ﻿  hellovr_opengl_main.cpp
+c:\users\triad semiconductor\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(292): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+c:\users\triad semiconductor\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(300): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
   hellovr_opengl.vcxproj -> C:\Users\Triad Semiconductor\Documents\GitHub\openvr\samples\hellovr_opengl\..\bin\win32\hellovr_opengl.exe

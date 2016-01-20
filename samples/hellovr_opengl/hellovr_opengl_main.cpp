@@ -125,6 +125,10 @@ private: // OpenGL bookkeeping
 	float m_fScaleSpacing;
 	float m_fScale;
 	
+	int m_capture_time;
+
+	FILE * m_pFile;
+	
 	int m_iSceneVolumeInit;                                  // if you want something other than the default 20x20x20
 	
 	float m_fNearClip;
@@ -248,6 +252,8 @@ CMainApplication::CMainApplication( int argc, char *argv[] )
 	, m_strPoseClasses("")
 	, m_bShowCubes( true )
 {
+	m_capture_time = 30;
+	bool file_path_specified = false;
 
 	for( int i = 1; i < argc; i++ )
 	{
@@ -276,7 +282,24 @@ CMainApplication::CMainApplication( int argc, char *argv[] )
 			m_iSceneVolumeInit = atoi( argv[ i + 1 ] );
 			i++;
 		}
+		else if (!stricmp(argv[i], "-capture_seconds") && (argc > i + 1) && (*argv[i + 1] != '-'))
+		{
+			m_capture_time = atoi(argv[i + 1]);
+			i++;
+		}
+		else if (!stricmp(argv[i], "-file") && (argc > i + 1) && (*argv[i + 1] != '-'))
+		{
+			m_pFile = fopen(argv[i + 1], "w");
+			i++;
+			file_path_specified = true;
+		}
 	}
+
+	if (!file_path_specified)
+	{
+		m_pFile = fopen("output.csv", "w");
+	}
+	
 	// other initialization tasks are done in BInit
 	memset(m_rDevClassChar, 0, sizeof(m_rDevClassChar));
 };
@@ -346,7 +369,7 @@ bool CMainApplication::BInit()
 		SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "VR_Init Failed", buf, NULL );
 		return false;
 	}
-
+	/* Luke did this
 	int nWindowPosX = 700;
 	int nWindowPosY = 100;
 	m_nWindowWidth = 1280;
@@ -430,7 +453,7 @@ bool CMainApplication::BInit()
 		printf("%s - Failed to initialize VR Compositor!\n", __FUNCTION__);
 		return false;
 	}
-
+	*/
 	return true;
 }
 
@@ -620,37 +643,44 @@ void CMainApplication::RunMainLoop()
 {
 	bool bQuit = false;
 
-	SDL_StartTextInput();
-	SDL_ShowCursor( SDL_DISABLE );
+	//SDL_StartTextInput();
+	//SDL_ShowCursor( SDL_DISABLE );
 
 	time_t  start_time = time(nullptr);
-	time_t  elapsed = time(nullptr);
-
+	time_t  elapsed = 0;
+	
 	while ( !bQuit )
 	{
-		bQuit = HandleInput();
+		//bQuit = HandleInput();
 
 		RenderFrame();
 
 		elapsed = time(nullptr) - start_time;
+		if (elapsed <= m_capture_time)
+		{
+			for (int nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice) {
+				if (m_rTrackedDevicePose[nDevice].bPoseIsValid && m_rTrackedDevicePose[nDevice].bDeviceIsConnected) {
+					double yaw = 180 / M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][0] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][0]);
+					double pitch = 180 / M_PI*atan(-1 * m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][0] / sqrt(pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1], 2) + pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2], 2)));
+					double roll = 180 / M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2]);
+					double x = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][3];
+					double y = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][3];
+					double z = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][3];
 
-		for (int nDevice = 0; nDevice < vr::k_unMaxTrackedDeviceCount; ++nDevice) {
-			if (m_rTrackedDevicePose[nDevice].bPoseIsValid && m_rTrackedDevicePose[nDevice].bDeviceIsConnected) {
-				double yaw = 180/M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][0] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][0]);
-				double pitch = 180/M_PI*atan(-1*m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][0] / sqrt(pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1],2)+ pow(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2], 2)));
-				double roll = 180/M_PI*atan(m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][1] / m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][2]);
-				double x = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[0][3];
-				double y = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][3];
-				double z = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][3];
-				
-				if (m_rDevClassChar[nDevice] != 'T') {
-					dprintf("%c%d,", m_rDevClassChar[nDevice], nDevice);
-					dprintf("%f,%f,%f,", x, y, z);
-					dprintf("%f,%f,%f,", yaw, pitch, roll);
-					dprintf("%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
-					dprintf("%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
+					if (m_rDevClassChar[nDevice] != 'T') {
+						fprintf (m_pFile,"%c%d,", m_rDevClassChar[nDevice], nDevice);
+						fprintf (m_pFile,"%f,%f,%f,", x, y, z);
+						fprintf (m_pFile,"%f,%f,%f,", yaw, pitch, roll);
+						fprintf (m_pFile,"%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
+						fprintf (m_pFile,"%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
+					}
 				}
 			}
+		}
+		else
+		{
+			fclose(m_pFile);
+			bQuit = true;
 		}
 	}
 
@@ -690,9 +720,11 @@ void CMainApplication::ProcessVREvent( const vr::VREvent_t & event )
 //-----------------------------------------------------------------------------
 void CMainApplication::RenderFrame()
 {
+	/*
 	// for now as fast as possible
 	if ( m_pHMD )
 	{
+		
 		DrawControllers();
 		RenderStereoTargets();
 		RenderDistortion();
@@ -740,7 +772,7 @@ void CMainApplication::RenderFrame()
 		
 		dprintf( "PoseCount:%d(%s) Controllers:%d\n", m_iValidPoseCount, m_strPoseClasses.c_str(), m_iTrackedControllerCount );
 	}
-
+	*/
 	UpdateHMDMatrixPose();
 }
 
