@@ -667,13 +667,13 @@ void CMainApplication::RunMainLoop()
 					double y = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][3];
 					double z = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][3];
 
-					if (m_rDevClassChar[nDevice] != 'T') {
+					//if (m_rDevClassChar[nDevice] != 'T') {
 						fprintf (m_pFile,"%c%d,", m_rDevClassChar[nDevice], nDevice);
 						fprintf (m_pFile,"%f,%f,%f,", x, y, z);
 						fprintf (m_pFile,"%f,%f,%f,", yaw, pitch, roll);
 						fprintf (m_pFile,"%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
 						fprintf (m_pFile,"%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
-					}
+					//}
 				}
 			}
 		}
