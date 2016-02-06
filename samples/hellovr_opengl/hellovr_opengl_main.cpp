@@ -639,9 +639,19 @@ bool CMainApplication::HandleInput()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
+struct Opos {
+	double yaw;
+	double pitch;
+	double roll;
+	double x;
+	double y;
+	double z;
+};
+
 void CMainApplication::RunMainLoop()
 {
 	bool bQuit = false;
+	struct Opos TRpos[32];  // hack to handel up to 32 devices ... only 
 
 	//SDL_StartTextInput();
 	//SDL_ShowCursor( SDL_DISABLE );
@@ -667,13 +677,35 @@ void CMainApplication::RunMainLoop()
 					double y = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[1][3];
 					double z = m_rTrackedDevicePose[nDevice].mDeviceToAbsoluteTracking.m[2][3];
 
-					//if (m_rDevClassChar[nDevice] != 'T') {
-						fprintf (m_pFile,"%c%d,", m_rDevClassChar[nDevice], nDevice);
-						fprintf (m_pFile,"%f,%f,%f,", x, y, z);
-						fprintf (m_pFile,"%f,%f,%f,", yaw, pitch, roll);
-						fprintf (m_pFile,"%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
-						fprintf (m_pFile,"%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
-					//}
+
+					if (m_rDevClassChar[nDevice] != 'T') {
+						fprintf(m_pFile, "%c%d,", m_rDevClassChar[nDevice], nDevice);
+						fprintf(m_pFile, "%f,%f,%f,", x, y, z);
+						fprintf(m_pFile, "%f,%f,%f,", yaw, pitch, roll);
+						fprintf(m_pFile, "%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
+						fprintf(m_pFile, "%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
+					}
+					else {
+						if ((nDevice < 32) &&   // make sure we are not indexing past TRpos array size;
+							(abs(yaw   - TRpos[nDevice].yaw  ) > 1e-6) ||
+							(abs(pitch - TRpos[nDevice].pitch) > 1e-6) ||
+							(abs(roll  - TRpos[nDevice].roll ) > 1e-6) ||
+							(abs(x     - TRpos[nDevice].x    ) > 1e-6) ||
+							(abs(y     - TRpos[nDevice].y    ) > 1e-6) ||
+							(abs(z     - TRpos[nDevice].z    ) > 1e-6) ) {
+								fprintf(m_pFile, "%c%d,", m_rDevClassChar[nDevice], nDevice);
+								fprintf(m_pFile, "%f,%f,%f,", x, y, z);
+								fprintf(m_pFile, "%f,%f,%f,", yaw, pitch, roll);
+								fprintf(m_pFile, "%f,%f,%f,", m_rTrackedDevicePose[nDevice].vVelocity.v[0], m_rTrackedDevicePose[nDevice].vVelocity.v[1], m_rTrackedDevicePose[nDevice].vVelocity.v[2]);
+								fprintf(m_pFile, "%f,%f,%f\n", 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[0], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[1], 180 / M_PI*m_rTrackedDevicePose[nDevice].vAngularVelocity.v[2]);
+								TRpos[nDevice].yaw = yaw;
+								TRpos[nDevice].pitch = pitch;
+								TRpos[nDevice].roll = roll;
+								TRpos[nDevice].x = x;
+								TRpos[nDevice].y = y;
+								TRpos[nDevice].z = z;
+						}
+					}
 				}
 			}
 		}

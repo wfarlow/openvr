@@ -1,6 +1,20 @@
-﻿  hellovr_opengl_main.cpp
-c:\users\triad semiconductor\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(292): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-c:\users\triad semiconductor\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(300): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
-  hellovr_opengl.vcxproj -> C:\Users\Triad Semiconductor\Documents\GitHub\openvr\samples\hellovr_opengl\..\bin\win32\hellovr_opengl.exe
+﻿Build started 2/5/2016 11:48:16 PM.
+     1>Project "C:\Users\VSVR1.VALVEBOX\Documents\GitHub\openvr\samples\hellovr_opengl\hellovr_opengl.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I.. /I../../headers /I"../thirdparty/glew/glew-1.11.0/include" /I"../thirdparty/sdl2-2.0.3/include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _CRT_NONSTDC_NO_DEPRECATE /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt hellovr_opengl_main.cpp
+         hellovr_opengl_main.cpp
+     1>c:\users\vsvr1.valvebox\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(292): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+     1>c:\users\vsvr1.valvebox\documents\github\openvr\samples\hellovr_opengl\hellovr_opengl_main.cpp(300): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\bin\win32\hellovr_opengl.exe" /INCREMENTAL /NOLOGO /LIBPATH:"..\thirdparty\glew\glew-1.11.0\lib\Release\Win32" /LIBPATH:"..\thirdparty\sdl2-2.0.3\bin\win32" /LIBPATH:..\..\lib\win32 openvr_api.lib glew32.lib SDL2.lib SDL2main.lib glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"..\bin\win32\hellovr_opengl.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\bin\win32\hellovr_opengl.lib" /MACHINE:X86 Debug\lodepng.obj
+         Debug\Matrices.obj
+         Debug\pathtools.obj
+         Debug\hellovr_opengl_main.obj
+         hellovr_opengl.vcxproj -> C:\Users\VSVR1.VALVEBOX\Documents\GitHub\openvr\samples\hellovr_opengl\..\bin\win32\hellovr_opengl.exe
+     1>Done Building Project "C:\Users\VSVR1.VALVEBOX\Documents\GitHub\openvr\samples\hellovr_opengl\hellovr_opengl.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.42
